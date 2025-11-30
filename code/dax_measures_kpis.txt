@@ -1,0 +1,249 @@
+# PACIFIC GLOBAL BANK CHURN ANALYSIS - CORE DAX MEASURES DOCUMENTATION
+#
+# This document contains the Data Analysis Expressions (DAX) used to calculate
+# the key performance indicators (KPIs), segmentation metrics, and time
+# intelligence needed to drive the insights in the Power BI dashboard.
+#
+# Data Source: 'Bank_Churn' Table (Primary Fact Table)
+# Time Dimension: 'Date_Dim' Table (Connected for Time Intelligence)
+# --------------------------------------------------------------------------
+
+
+# --------------------------------------------------------------------------
+# SECTION 1: CORE CUSTOMER COUNTS & FUNDAMENTALS
+# SUMMARY: Establishes the foundation of the analysis by calculating the total
+# customer base, the count of churned/retained customers, and the overall
+# portfolio Churn Rate and Retention Rate.
+# --------------------------------------------------------------------------
+
+[Total_Customers] = 
+COUNTROWS('Bank_Churn')
+
+[Customers_CP] = 
+DISTINCTCOUNT('Bank_Churn'[CustomerId])
+
+[Total_Churned] = 
+CALCULATE(
+    COUNTROWS('Bank_Churn'), 
+    'Bank_Churn'[Exited] = 1
+)
+
+[Total_Retained] = 
+CALCULATE(
+    COUNTROWS('Bank_Churn'),
+    'Bank_Churn'[Exited] = 0
+)
+
+[Total_Balance_Churned] = 
+CALCULATE(
+    SUM('Bank_Churn'[Balance]), 
+    'Bank_Churn'[Exited] = 1
+)
+
+[Churn_Rate_CP] = 
+DIVIDE(
+    [Total_Churned], 
+    [Total_Customers], 
+    0
+)
+
+[Customer_Retention_Rate (%)] = 
+VAR TotalCustomers = COUNTROWS('Bank_Churn')
+VAR RetainedCustomers = CALCULATE(
+    COUNTROWS('Bank_Churn'),
+    'Bank_Churn'[Exited] = 0
+)
+RETURN
+DIVIDE(RetainedCustomers, TotalCustomers, 0)
+
+
+# --------------------------------------------------------------------------
+# SECTION 2: KEY SEGMENTATION METRICS
+# SUMMARY: Defines specific customer cohorts (Inactive, Low Credit, High Value)
+# and calculates their individual Churn Rates to identify vulnerable segments
+# for targeted intervention strategies.
+# --------------------------------------------------------------------------
+
+# --- Inactive Customer Segment ---
+
+[Inactive_Customers] = 
+CALCULATE(
+    [Total_Customers], 
+    'Bank_Churn'[IsActiveMember] = 0
+)
+
+[Inactive_Churn_Rate] = 
+DIVIDE(
+    CALCULATE([Total_Churned], 'Bank_Churn'[IsActiveMember] = 0),
+    [Inactive_Customers],
+    0
+)
+
+# --- Low Credit Score Segment ---
+
+[Low_Credit_Customers] = 
+CALCULATE(
+    COUNTROWS('Bank_Churn'),
+    'Bank_Churn'[Credit Score Band] = "Low (300–499)"
+)
+
+[Low_Credit_Churn_Rate] = 
+DIVIDE(
+    CALCULATE([Total_Churned], 'Bank_Churn'[Credit Score Band] = "Low (300–499)"),
+    [Low_Credit_Customers],
+    0
+)
+
+# --- High Value Segment (Custom Definition) ---
+
+[High_Value_Customers] = 
+CALCULATE(
+    COUNTROWS('Bank_Churn'), 
+    'Bank_Churn'[Balance Group] IN {"High", "Very High"} 
+    && 'Bank_Churn'[EstimatedSalary] > 100000
+)
+
+
+# --------------------------------------------------------------------------
+# SECTION 3: TIME INTELLIGENCE (TI) - CHURN RATE & CUSTOMER COUNTS
+# SUMMARY: Provides dynamic comparison metrics (Previous Month/Year and MoM/YoY 
+# percentage changes) for customer counts and the overall Churn Rate, enabling
+# trend analysis and performance tracking.
+# --------------------------------------------------------------------------
+
+# --- TI Base Measures for Churn Rate ---
+
+[Total_Churned_CP] = 
+COALESCE(
+    CALCULATE(
+        COUNTROWS('Bank_Churn'),
+        'Bank_Churn'[Exited] = 1,
+        KEEPFILTERS('Bank_Churn'[Bank DOJ]) # Date of Joining (DOJ) used for TI context
+    ),
+    0
+)
+
+[Churn_Rate_PM] = 
+CALCULATE(
+    [Churn_Rate_CP],
+    PREVIOUSMONTH('Date_Dim'[Date])
+)
+
+[Churn_Rate_PY] = 
+CALCULATE(
+    [Churn_Rate_CP],
+    SAMEPERIODLASTYEAR('Date_Dim'[Date])
+)
+
+[Churn_Rate_YoY_%] = 
+VAR cm = [Churn_Rate_CP]
+VAR py = [Churn_Rate_PY]
+VAR diff = cm - py
+VAR pct = DIVIDE(diff, py, 0)
+VAR arrow = IF(diff < 0, "▼", "▲") # Churn decreasing is good (Green ▼)
+VAR sign  = IF(diff < 0, "-", "+")
+RETURN
+"YoY " & arrow & " " & sign & FORMAT(ABS(pct), "0.0%")
+
+
+# --- TI Base Measures for Customer Counts ---
+
+[Customers_PP] = 
+CALCULATE (
+    DISTINCTCOUNT ( 'Bank_Churn'[CustomerId] ),
+    DATEADD ( 'Date_Dim'[Date], -1, MONTH )
+)
+
+[Customers_PY] = 
+CALCULATE (
+    DISTINCTCOUNT ( 'Bank_Churn'[CustomerId] ),
+    DATEADD ( 'Date_Dim'[Date], -1, YEAR )
+)
+
+[Customers_MoM_%] = 
+VAR cm = [Customers_CP]
+VAR pm = [Customers_PP]
+VAR diff = cm - pm
+VAR mom = DIVIDE(diff, pm)
+VAR _arrow = IF(diff > 0, "▲", "▼") # Growth is good (Green ▲)
+VAR _sign  = IF(diff > 0, "+", "")
+RETURN
+"MOM% " & _arrow & " " & _sign & FORMAT(mom, "0.0%")
+
+
+# --------------------------------------------------------------------------
+# SECTION 4: REVENUE AT RISK (Estimated Salary Proxy)
+# SUMMARY: Measures the financial impact of customer churn by calculating the
+# 'Revenue at Risk' (using Estimated Salary as a proxy) and tracking its
+# change over time (YoY).
+# --------------------------------------------------------------------------
+
+[Revenue_At_Risk_CP] = 
+CALCULATE(
+    SUM('Bank_Churn'[EstimatedSalary]),
+    'Bank_Churn'[Exited] = 1
+)
+
+[Revenue_At_Risk_PY] = 
+CALCULATE(
+    [Revenue_At_Risk_CP],
+    DATEADD('Date_Dim'[Date], -1, YEAR)
+)
+
+[Revenue_At_Risk_YoY_%] = 
+VAR cm = [Revenue_At_Risk_CP]
+VAR py = [Revenue_At_Risk_PY]
+VAR diff = cm - py
+VAR yoy = IF( ISBLANK(py) || py = 0, BLANK(), DIVIDE(diff, py, 0) )
+VAR arrow = IF(diff > 0, "▲", "▼") # Increase in revenue risk is bad (Red ▲)
+VAR sign  = IF(diff > 0, "+", "-")
+RETURN
+IF(
+    ISBLANK(yoy),
+    "YoY% N/A",
+    "YoY% " & arrow & " " & sign & FORMAT(ABS(yoy), "0.0%")
+)
+
+
+# --------------------------------------------------------------------------
+# SECTION 5: HIGH RISK SEGMENT COUNT
+# SUMMARY: Identifies and tracks customers who meet specific combined risk criteria
+# (e.g., Low Credit Score OR High Estimated Salary) and quantifies the movement
+# of this segment month-over-month.
+# --------------------------------------------------------------------------
+
+# Note: Assumes [High_Value_Threshold] is a defined scalar measure or variable in Power BI.
+
+[High_Risk_CP] = 
+CALCULATE(
+    COUNTROWS('Bank_Churn'),
+    FILTER(
+        'Bank_Churn',
+        'Bank_Churn'[CreditScore] < 500
+        || 'Bank_Churn'[EstimatedSalary] >= [High_Value_Threshold]
+    )
+)
+
+[High_Risk_PY] = 
+CALCULATE(
+    [High_Risk_CP],
+    SAMEPERIODLASTYEAR('Date_Dim'[Date])
+)
+
+[High_Risk_MoM_%] = 
+VAR cm = [High_Risk_CP]
+VAR pm =
+    CALCULATE(
+        [High_Risk_CP],
+        DATEADD('Date_Dim'[Date], -1, MONTH)
+    )
+VAR diff = cm - pm
+VAR mom = IF(pm = 0, BLANK(), DIVIDE(diff, pm, 0))
+VAR arrow = IF(diff > 0, "▲", "▼") # Increase in risk is bad (Red ▲)
+VAR sign  = IF(diff > 0, "+", "-")
+RETURN
+IF(
+    ISBLANK(mom),
+    "MoM% N/A",
+    "MoM% " & arrow & " " & sign & FORMAT(ABS(mom), "0.0%")
+)
