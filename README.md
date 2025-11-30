@@ -1,10 +1,6 @@
-Yes, I am ready. I will improve the markdown formatting while keeping all your content exactly the same.
-
-Here is your README with enhanced markdown formatting:
-
 # 📊 Pacific Global Bank Customer Churn Intervention Strategy
 
-A comprehensive data analysis project aimed at identifying high-risk customer segments and delivering targeted intervention strategies to minimize financial losses due to customer attrition.
+A comprehensive data analysis project aimed at identifying high-risk customer segments and delivering targeted intervention strategies to minimise financial losses due to customer attrition.
 
 ---
 
@@ -23,33 +19,33 @@ A comprehensive data analysis project aimed at identifying high-risk customer se
 
 ## 1. Overview
 
-This project successfully utilizes **Power BI** and **DAX (Data Analysis Expressions)** to move beyond general customer retention efforts. The core achievement is the identification and quantification of specific customer cohorts that represent the highest churn risk, allowing the bank to transform reactive efforts into proactive, focused strategies.
+This project successfully utilises **Power BI** and **DAX (Data Analysis Expressions)** to move beyond general customer retention efforts. The core achievement is the identification and quantification of specific customer cohorts that represent the highest risk of churn, enabling the bank to transform reactive efforts into proactive, focused strategies.
 
 ---
 
 ## 2. The Business Problem
 
-Pacific Global Bank is experiencing significant and costly customer attrition, which negatively impacts overall growth and jeopardizes potential future revenue. The difficulty lies in deploying generic, inefficient retention efforts that fail to target the specific high-risk segments driving the most severe financial leakage.
+Pacific Global Bank is experiencing significant and costly customer attrition, which negatively impacts overall growth and jeopardises potential future revenue. The difficulty lies in deploying generic, inefficient retention efforts that fail to target the specific high-risk segments driving the most severe financial leakage.
 
-The goal of this analysis was to **quantify the Revenue At Risk** and pinpoint the exact customer segments (by age, tenure, activity, and geography) that require immediate, focused intervention to maximize retention ROI.
+The goal of this analysis was to quantify the Revenue At Risk and pinpoint the exact customer segments (by age, tenure, activity, and geography) that require immediate, focused intervention to maximise retention ROI.
 
 ---
 
 ## 3. Tools and Technologies
 
-The analysis was executed using the following tools, with Power BI serving as the central platform for data modeling and visualization.
+The analysis was executed using the following tools, with Power BI serving as the central platform for data modelling and visualisation.
 
 | Tool | Category | Description |
 | :--- | :--- | :--- |
-| **Power BI** | Visualization & Analysis | Utilized for data integration, developing the data model, and designing the intuitive, visual analytics dashboard. |
-| **DAX** | Data Modeling | Employed for creating custom, complex measures (e.g., Churn Rate, Time Intelligence) and defining segmentation logic. |
+| **Power BI** | Visualisation & Analysis | Utilised for data integration, developing the data model, and designing the intuitive, visual analytics dashboard. |
+| **DAX** | Data Modelling | Employed for creating custom, complex measures (e.g., Churn Rate, Time Intelligence) and defining segmentation logic. |
 | **Data Sources** | CSV, Excel | Primary datasets: `data/Bank_Churn.csv` and dimension tables. |
 
 ---
 
 ## 4. Project Structure
 
-The repository is structured for easy navigation, with the analytical output and source data organized in dedicated folders.
+The repository is structured for easy navigation, with the analytical output and source data organised in dedicated folders.
 
 ```
 E:\DA_Project\Customer_churn_analysis
@@ -60,7 +56,7 @@ E:\DA_Project\Customer_churn_analysis
 │   ├── CustomerInfo.csv
 │   └── (other data files...)
 ├── images/
-│   ├── (All 6 visualization PNG files...)
+│   ├── (All 6 visualisation PNG files...)
 ├── bank_chrun_analysis.pdf             <-- Full Executive Report (PDF)
 ├── Customer_Churn_Analysis.pbix        <-- Power BI Source File
 └── README.md                           <-- This main file
@@ -70,7 +66,7 @@ E:\DA_Project\Customer_churn_analysis
 
 ## 5. Research Portion and Key Findings
 
-The comprehensive analysis identified five critical areas of customer behavior that drive attrition.
+The comprehensive analysis identified five critical areas of customer behaviour that drive attrition.
 
 ### 5.1 Engagement is the Primary Churn Predictor
 
@@ -81,7 +77,7 @@ Inactive accounts are significantly more prone to attrition compared to active a
 
 ### 5.2 Critical Failure in Senior Inactive Segment
 
-The combination of age (50+) and inactivity results in a near-total abandonment rate. This indicates a systemic failure to engage and retain older, non-active customers, demanding immediate personalized attention.
+The combination of age (50+) and inactivity results in a near-total abandonment rate. This indicates a systemic failure to engage and retain older, non-active customers, demanding immediate personalised attention.
 
 > **Visual Evidence: Critical Failure Age 50+ Churn Rate**
 > ![Critical Failure Age 50+ Churn Rate](images/churn-by-age-segmentation.png)
@@ -95,7 +91,7 @@ The customer lifecycle is marked by a period of heightened risk: The probability
 
 ### 5.4 Geographic Concentration of Risk
 
-The attrition risk is heavily concentrated in a single region: **Germany** exhibits a notably elevated churn rate compared to other regions, requiring a specific, localized retention strategy.
+The attrition risk is heavily concentrated in a single region: **Germany** exhibits a notably elevated churn rate compared to other regions, requiring a specific, localised retention strategy.
 
 > **Visual Evidence: Geographic Churn Disparities**
 > ![Regional Churn Disparities](images/churn-by-geography-risk.png)
@@ -111,7 +107,7 @@ Inactive female customers show a higher propensity to churn than their male coun
 
 ## 6. Dashboard Interface Overview
 
-The full Power BI dashboard provides the interactive metrics and quantitative context that supports all the findings in this report.
+The full Power BI dashboard provides the interactive metrics and quantitative context that support all the findings in this report.
 
 > **Visual Evidence (Main Dashboard View):**
 > ![Main Power BI Dashboard Overview](images/pacific-global-bank-dashboard-overview - Copy.png)
@@ -122,9 +118,9 @@ The full Power BI dashboard provides the interactive metrics and quantitative co
 
 The following actionable strategies are recommended for immediate implementation:
 
-1. **Senior Intervention:** Launch a dedicated "Personalized Service Check-in" campaign focused on low-friction, traditional communication (e.g., personal phone calls) for customers aged 50+ who are inactive.
+1. **Senior Intervention:** Launch a dedicated "Personalised Service Check-in" campaign focused on low-friction, traditional communication (e.g., personal phone calls) for customers aged 50+ who are inactive.
 2. **Geographic Focus:** Empower the German branch network with flexible loyalty and service offers to mitigate the concentrated regional risk.
-3. **Lifecycle Retention:** Implement an automated workflow to trigger a "Relationship Milestone Review" contact six months prior to the five-year anniversary (the vulnerability window), offering customized loyalty incentives.
+3. **Lifecycle Retention:** Implement an automated workflow to trigger a "Relationship Milestone Review" contact six months before the fifth anniversary (the vulnerability window), offering customised loyalty incentives.
 
 ---
 
